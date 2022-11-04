@@ -1,0 +1,11 @@
+$users=Import-csv C:\Users\test\Desktop\users_list.csv
+foreach($user in $users){
+Try{
+$ErrorActionPreference='Stop'
+get-aduser $user.samaccountname |select Name,samaccountname, @{n ="AccountStatus";E={if(($_.Enabled -eq 'TRUE')) {'Enabled'} Else {'Disabled'}}}}
+
+catch{
+$output = "$($user.samaccountname)"
+[PSCustomObject]@{SamAccountName = $output} |Export-csv C:\Users\ad_ucc_ao\Desktop\Inactive_Users.csv -notype -append
+}
+}
